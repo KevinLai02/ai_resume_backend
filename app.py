@@ -11,7 +11,8 @@ llm = AutoModelForCausalLM.from_pretrained(
 app = Flask(__name__)
 @app.route("/resume", methods=['GET'])
 def resume():
-    return jsonify({"message": llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式")}) 
+    res = llm("用 [中文] 生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子")
+    return jsonify({"message": res}) 
     # return jsonify({"message": 'hello world'}) 
 
 if __name__ == '__main__':
