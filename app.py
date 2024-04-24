@@ -9,10 +9,10 @@ from ctransformers import AutoModelForCausalLM
 #     )
 
 app = Flask(__name__)
-@app.route("/resume")
+@app.route("/resume", methods=['GET'])
 def resume():
     # return jsonify({"message": llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式")}) 
     return jsonify({"message": 'hello world'}) 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=3000, debug=True)
