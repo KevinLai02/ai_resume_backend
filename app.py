@@ -12,3 +12,6 @@ app = Flask(__name__)
 @app.route("/resume")
 def resume():
     return jsonify({"message": llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式")}) 
+
+if __name__ == '__main__':
+    app.run()
