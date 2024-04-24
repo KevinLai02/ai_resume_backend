@@ -2,11 +2,11 @@ from flask import Flask, jsonify
 from ctransformers import AutoModelForCausalLM
 
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-llm = AutoModelForCausalLM.from_pretrained(
-    "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-      model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-      model_type="alpaca"
-    )
+# llm = AutoModelForCausalLM.from_pretrained(
+#     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
+#       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
+#       model_type="alpaca"
+#     )
 
 app = Flask(__name__)
 @app.route("/resume")
