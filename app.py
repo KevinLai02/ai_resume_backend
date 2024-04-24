@@ -7,11 +7,12 @@ llm = AutoModelForCausalLM.from_pretrained(
       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
       model_type="alpaca"
     )
-#print(llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式"))
+
 app = Flask(__name__)
 @app.route("/resume")
 def resume():
-    return jsonify({"message": llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式")}) 
+    # return jsonify({"message": llm("生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子，不要用條列式")}) 
+    return jsonify({"message": 'hello world'}) 
 
 if __name__ == '__main__':
     app.run()
