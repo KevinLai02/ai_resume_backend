@@ -5,3 +5,4 @@ llama_cpp_python==0.2.57
 matplotlib==3.8.3
 numpy==1.26.4
 pandas==2.2.1
+flask_cors
