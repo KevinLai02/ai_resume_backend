@@ -63,19 +63,15 @@ def get_resumeData():
 @app.route("/resumeData", methods=["POST"])
 def add_resume():
     new_data = request.json
-
     # 確保有數據可以填充
     if not data_storage or not data_storage[0].get("resumeData"):
         return jsonify({"message": "No data structure available to update"}), 404
 
     # 填充數據到第一個resumeData結構中
     resume = data_storage[0]["resumeData"][0]
-
-    resume["resumeName"] = new_data.get("resumeName", resume["resumeName"])
-    resume["resumeField1"] = new_data.get("resumeField1", resume["resumeField1"])
-    resume["resumeField2"] = new_data.get("resumeField2", resume["resumeField2"])
-    resume["resumeField3"] = new_data.get("resumeField3", resume["resumeField3"])
-    resume["resumeAutobiography"] = new_data.get("resumeAutobiography", resume["resumeAutobiography"])
+    # 使用字典更新現有字段
+    resume.update({key: new_data.get(key, resume.get(key)) for key in resume})
+    # 保存數據
     save_resumeData(data_storage)
     return jsonify({"message": "Data updated successfully"}), 200
 
