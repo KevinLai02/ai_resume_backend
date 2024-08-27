@@ -1,0 +1,26 @@
+api暫時只有raw的json格式
+
+前端履歷API-----------------------------
+GET http://127.0.0.1:5000/resumeData
+
+POST http://127.0.0.1:5000/resumeData
+{
+    "resumeName":"Kevin",
+    "resumeField1":"javascript, react",
+    "resumeField2":"man",
+    "resumeField3":"talent, handsome",
+    "resumeAutobiography":"dskljfkdsjfkdsjfdskfsadfsdfsdafewfewr"
+}
+
+面試官API-----------------------------
+get http://127.0.0.1:8080/resume
+
+post http://127.0.0.1:8080/resume
+{
+    "name":"Micky"
+}
+
+post http://127.0.0.1:5000/resume/Micky/message
+{
+    "message": "08/17 03:19pm"
+}

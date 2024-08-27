@@ -90,8 +90,9 @@ def add_resume():
 
 #     return jsonify({"message": "Data deleted successfully"}), 200
 
-# -----------------------------------------------------------------
 
+
+# ----------------------------面試官JSON ------------------------------
 # 獲取所有用戶的信息
 @app.route("/resume", methods=["GET"])
 def get_user():
