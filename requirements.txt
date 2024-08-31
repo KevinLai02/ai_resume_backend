@@ -7,3 +7,8 @@ numpy==1.26.4
 pandas==2.2.1
 flask_cors
 ollama
+chromadb
+langchain-ollama
+langchain-community
+sentence_transformers 
+langchain-huggingface
