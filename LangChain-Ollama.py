@@ -1,7 +1,7 @@
 from langchain_community.document_loaders import TextLoader
 
 # -------------載入文件----------------
-loader = TextLoader(file_path='./rag/crew.txt',encoding="UTF-8")
+loader = TextLoader(file_path='./txt/crew.txt',encoding="UTF-8")
 docs = loader.load()
 # print(docs[0])
 
