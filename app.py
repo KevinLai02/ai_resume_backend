@@ -4,11 +4,11 @@ from flask_cors import CORS
 import json
 
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-# llm = AutoModelForCausalLM.from_pretrained(
-#     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-#       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-#       model_type="alpaca"
-#     )
+llm = AutoModelForCausalLM.from_pretrained(
+    "TheBloke/Chinese-Alpaca-2-13B-GGUF",
+      model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
+      model_type="alpaca"
+    )
 
 # 讀取 JSON 檔案
 def load_users():
@@ -46,12 +46,12 @@ data_storage = load_resumeData()
 
 app = Flask(__name__)
 CORS(app)
-# @app.route("/resume", methods=['GET'])
-# def resume():
-#     res = llm("用 [中文] 生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子")
-#     return jsonify({"message": res}) 
-#     你這裡的問題應該是要返回json檔res不是json所以不行
-#     # return jsonify({"message": 'hello world'}) 
+@app.route("/resume", methods=['GET'])
+def resume():
+    res = llm("用 [中文] 生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子")
+    return jsonify({"message": res}) 
+    # 你這裡的問題應該是要返回json檔res不是json所以不行
+    # # return jsonify({"message": 'hello world'}) 
 
 # ------------------Kevin前端JSON 欄位資料------------------------------
 @app.route("/resumeData", methods=["GET"])
@@ -59,6 +59,11 @@ def get_resumeData():
     if not data_storage:
         return jsonify({"message": "No data available"}), 404
     return jsonify(data_storage), 200
+
+@app.route("/test", methods=["GET"])
+def test():
+    return jsonify('test'), 200
+
 
 @app.route("/resumeData", methods=["POST"])
 def add_resume():
