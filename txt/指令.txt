@@ -1,26 +1,6 @@
-api暫時只有raw的json格式
+conda create -n ollama-py python=3.10
+conda activate <env_name>
+conda env remove --name <env_name>
 
-前端履歷API-----------------------------
-GET http://127.0.0.1:5000/resumeData
-
-POST http://127.0.0.1:5000/resumeData
-{
-    "resumeName":"Kevin",
-    "resumeField1":"javascript, react",
-    "resumeField2":"man",
-    "resumeField3":"talent, handsome",
-    "resumeAutobiography":"dskljfkdsjfkdsjfdskfsadfsdfsdafewfewr"
-}
-
-面試官API-----------------------------
-get http://127.0.0.1:8080/resume
-
-post http://127.0.0.1:8080/resume
-{
-    "name":"Micky"
-}
-
-post http://127.0.0.1:5000/resume/Micky/message
-{
-    "message": "08/17 03:19pm"
-}
+pip install -r requirements.txt
+pip install -U langchain-ollama
