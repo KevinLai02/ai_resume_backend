@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, g
 from ctransformers import AutoModelForCausalLM
 from flask_cors import CORS
 import json
-from LLM.LangChainOllama import Initialize_LLM, chatLLM
+from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM
 
 # llm = AutoModelForCausalLM.from_pretrained(
 #     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
@@ -54,7 +54,7 @@ def process_text():
 #     # return jsonify({"message": 'hello world'}) 
 
 @app.route("/AIspeak/resumeData", methods=["POST"])
-def add_resume():
+def ask_resume():
     if request.method == 'POST':
         data = request.get_json()
         # save_directory = './json'
@@ -76,14 +76,28 @@ def add_resume():
         請根據上文提供的資料問5個問題
         """
         
-        LLManwser = chatLLM(Question,g.chatmodel,g.retriever)
+        llmAnwser = chatLLM(Question,g.chatmodel,g.retriever)
         
-        return jsonify({"status": "success", "LLManwser": LLManwser}), 200
+        return jsonify({"status": "success", "llmAnwser": llmAnwser}), 200
         
     else:
         return jsonify({"message": "No data structure available to update"}), 404
     
+@app.route("/AIspeak/rateAnwser", methods=["POST"])
+def rate_anwser():
+    if request.method == 'POST':
+        data = request.get_json()
+        print(data)
+        
+        Question = f"{data},請根據資料評分"
 
+        
+        RateAnwser = rateLLM(Question,g.chatmodel)
+        
+        return jsonify({"status": "success", "RateAnwser": RateAnwser}), 200
+        
+    else:
+        return jsonify({"message": "No data structure available to update"}), 404
 
 
 if __name__ == '__main__':

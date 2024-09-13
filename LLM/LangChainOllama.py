@@ -77,9 +77,32 @@ def chatLLM(UserQuestiion,chatmodel,retriever):
     llmAnwser = chain.invoke(UserQuestiion)
     return llmAnwser
 
-LLM = Initialize_LLM()
-chatmodel = LLM[0]
-retriever= LLM[1]
+def rateLLM(UserQuestiion,chatmodel):
+    prompt = ChatPromptTemplate.from_messages([
+        ('system','你是一位善用工具的面試官, '
+                '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
+        # MessagesPlaceholder(variable_name="chat_history"),
+        ('human','{input}'),
+    ])
+
+    str_parser = StrOutputParser()
+    template = (
+        "你是評分面試官只會根據資料評總分, 只會以專業性、建設性、表達方式評分, 滿分為100分, \n"
+        "你的回答只會有 '專業性、建設性、表達方式'加上分數 "
+        # "{context}\n"
+        "問題: {question}"
+        )
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = (
+        {"question": RunnablePassthrough()}
+        | prompt
+        | chatmodel
+        | str_parser
+    )
+    llmAnwser = chain.invoke(UserQuestiion)
+    return llmAnwser
+
+
 # retrieved_docs = retriever.invoke("船員資格")
 # print(f'傳回 {len(retrieved_docs)} 筆資料')
 
