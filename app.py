@@ -62,9 +62,19 @@ def add_resume():
         #     os.makedirs(save_directory)
         # filename = f"{uuid.uuid4()}.json"
         # filepath = os.path.join(save_directory, filename)
-        
+        EducationalQualifications = data.get("EducationalQualifications")
+        WorkExperience = data.get("WorkExperience")
+        ProfessionalSkills = data.get("ProfessionalSkills")
+        TechnicalField = data.get("TechnicalField")
         resumeAutobiography = data.get("resumeAutobiography")
-        Question = f"{resumeAutobiography}。請根據上文問一個問題"
+        Question = f"""
+        此人的學歷為:{EducationalQualifications},
+        工作經歷為:{WorkExperience},
+        專業技能為{ProfessionalSkills},
+        技術領域為:{TechnicalField},
+        自傳為:{resumeAutobiography}。
+        請根據上文提供的資料問5個問題
+        """
         
         LLManwser = chatLLM(Question,g.chatmodel,g.retriever)
         

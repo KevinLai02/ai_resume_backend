@@ -49,23 +49,21 @@ def Initialize_LLM():
     return chatmodel,retriever
 
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 
-from langchain_core.prompts import MessagesPlaceholder
-from langchain_core.prompts import ChatPromptTemplate
 
 def chatLLM(UserQuestiion,chatmodel,retriever):
     prompt = ChatPromptTemplate.from_messages([
         ('system','你是一位善用工具的面試官, '
                 '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
-        MessagesPlaceholder(variable_name="chat_history"),
+        # MessagesPlaceholder(variable_name="chat_history"),
         ('human','{input}'),
     ])
 
     str_parser = StrOutputParser()
     template = (
-        "請根據以下內容加上自身判斷回答問題:\n"
+        "你是面試官只會根據資料問問題, 且只會問面試相關問題, 每次回答開頭都以 '請問' 來問:\n"
         "{context}\n"
         "問題: {question}"
         )
