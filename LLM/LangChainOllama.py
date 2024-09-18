@@ -49,23 +49,21 @@ def Initialize_LLM():
     return chatmodel,retriever
 
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnablePassthrough
+from langchain_core.prompts import MessagesPlaceholder, ChatPromptTemplate
 
-from langchain_core.prompts import MessagesPlaceholder
-from langchain_core.prompts import ChatPromptTemplate
 
 def chatLLM(UserQuestiion,chatmodel,retriever):
     prompt = ChatPromptTemplate.from_messages([
         ('system','你是一位善用工具的面試官, '
                 '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
-        MessagesPlaceholder(variable_name="chat_history"),
+        # MessagesPlaceholder(variable_name="chat_history"),
         ('human','{input}'),
     ])
 
     str_parser = StrOutputParser()
     template = (
-        "請根據以下內容加上自身判斷回答問題:\n"
+        "你是面試官只會根據資料問問題, 且只會問面試相關問題, 每次回答開頭都以 '請問' 來問:\n"
         "{context}\n"
         "問題: {question}"
         )
@@ -79,9 +77,32 @@ def chatLLM(UserQuestiion,chatmodel,retriever):
     llmAnwser = chain.invoke(UserQuestiion)
     return llmAnwser
 
-LLM = Initialize_LLM()
-chatmodel = LLM[0]
-retriever= LLM[1]
+def rateLLM(UserQuestiion,chatmodel):
+    prompt = ChatPromptTemplate.from_messages([
+        ('system','你是一位善用工具的面試官, '
+                '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
+        # MessagesPlaceholder(variable_name="chat_history"),
+        ('human','{input}'),
+    ])
+
+    str_parser = StrOutputParser()
+    template = (
+        "你是評分面試官只會根據資料評總分, 只會以專業性、建設性、表達方式評分, 滿分為100分, \n"
+        "你的回答只會有 '專業性、建設性、表達方式'加上分數 "
+        # "{context}\n"
+        "問題: {question}"
+        )
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = (
+        {"question": RunnablePassthrough()}
+        | prompt
+        | chatmodel
+        | str_parser
+    )
+    llmAnwser = chain.invoke(UserQuestiion)
+    return llmAnwser
+
+
 # retrieved_docs = retriever.invoke("船員資格")
 # print(f'傳回 {len(retrieved_docs)} 筆資料')
 

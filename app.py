@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, g
 from ctransformers import AutoModelForCausalLM
 from flask_cors import CORS
 import json
-from LLM.LangChainOllama import Initialize_LLM, chatLLM
+from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM
 
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 llm = AutoModelForCausalLM.from_pretrained(
@@ -55,7 +55,7 @@ def process_text():
 #     # return jsonify({"message": 'hello world'}) 
 
 @app.route("/AIspeak/resumeData", methods=["POST"])
-def add_resume():
+def ask_resume():
     if request.method == 'POST':
         data = request.get_json()
         # save_directory = './json'
@@ -63,13 +63,23 @@ def add_resume():
         #     os.makedirs(save_directory)
         # filename = f"{uuid.uuid4()}.json"
         # filepath = os.path.join(save_directory, filename)
-        
+        EducationalQualifications = data.get("EducationalQualifications")
+        WorkExperience = data.get("WorkExperience")
+        ProfessionalSkills = data.get("ProfessionalSkills")
+        TechnicalField = data.get("TechnicalField")
         resumeAutobiography = data.get("resumeAutobiography")
-        Question = f"{resumeAutobiography}。請根據上文問一個問題"
+        Question = f"""
+        此人的學歷為:{EducationalQualifications},
+        工作經歷為:{WorkExperience},
+        專業技能為{ProfessionalSkills},
+        技術領域為:{TechnicalField},
+        自傳為:{resumeAutobiography}。
+        請根據上文提供的資料問5個問題
+        """
         
-        LLManwser = chatLLM(Question,g.chatmodel,g.retriever)
+        llmAnwser = chatLLM(Question,g.chatmodel,g.retriever)
         
-        return jsonify({"status": "success", "LLManwser": LLManwser}), 200
+        return jsonify({"status": "success", "llmAnwser": llmAnwser}), 200
         
     else:
         return jsonify({"message": "No data structure available to update"}), 404
@@ -83,7 +93,22 @@ def resume():
     res = llm("用 [中文] 生成一段大約100字有關 [" + profession + talent + category + "] 的中文履歷自我介紹句子")
     return jsonify({"message": res})
 
+    
+@app.route("/AIspeak/rateAnwser", methods=["POST"])
+def rate_anwser():
+    if request.method == 'POST':
+        data = request.get_json()
+        print(data)
+        
+        Question = f"{data},請根據資料評分"
 
+        
+        RateAnwser = rateLLM(Question,g.chatmodel)
+        
+        return jsonify({"status": "success", "RateAnwser": RateAnwser}), 200
+        
+    else:
+        return jsonify({"message": "No data structure available to update"}), 404
 
 
 if __name__ == '__main__':
