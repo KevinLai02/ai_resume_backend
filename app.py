@@ -5,11 +5,11 @@ import json
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM
 
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-llm = AutoModelForCausalLM.from_pretrained(
-    "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-      model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-      model_type="alpaca"
-    )
+# llm = AutoModelForCausalLM.from_pretrained(
+#     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
+#       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
+#       model_type="alpaca"
+#     )
 
 app = Flask(__name__)
 
@@ -74,10 +74,13 @@ def ask_resume():
         專業技能為{ProfessionalSkills},
         技術領域為:{TechnicalField},
         自傳為:{resumeAutobiography}。
-        請根據上文提供的資料問5個問題
+        請根據上文提供的資料問1個問題
         """
-        
-        llmAnwser = chatLLM(Question,g.chatmodel,g.retriever)
+        llmAnwser = []
+
+        for i in range(5):
+            llmAnwser.append(chatLLM(Question,g.chatmodel,g.retriever))
+        print(llmAnwser)
         
         return jsonify({"status": "success", "llmAnwser": llmAnwser}), 200
         
