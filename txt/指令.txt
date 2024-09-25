@@ -4,3 +4,5 @@ conda env remove --name <env_name>
 
 pip install -r requirements.txt
 pip install -U langchain-ollama
+
+conda create -n AImaritime python=3.10

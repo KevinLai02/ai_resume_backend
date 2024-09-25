@@ -26,3 +26,8 @@ POST http://127.0.0.1:8080/AIspeak/rateAnwser
     "q5":"請問你將如何應用你的程式設計能力於未來工作的職涯中？",  
     "a5":"我計劃將我的程式設計能力應用於解決技術問題，優化工作流程，並在海事資訊科技或相關領域中開發出有效的技術解決方案，為公司帶來創新和效率"  
 }  
+
+這是用來找履歷資料會回傳陣列包含五個欄位  
+POST http://127.0.0.1:8080//upload  
+記得用desktop postman form data 上傳檔案  
+![image](https://github.com/KevinLai02/ai_resume_backend/blob/main/txt/postman-resume.png) 

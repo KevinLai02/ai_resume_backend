@@ -3,7 +3,7 @@ from ctransformers import AutoModelForCausalLM
 from flask_cors import CORS
 import json
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
-
+from langchain_community.document_loaders import PyPDFLoader
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 # llm = AutoModelForCausalLM.from_pretrained(
 #     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
@@ -116,7 +116,7 @@ def rate_anwser():
 @app.route('/upload', methods=['POST'])
 def upload_file():
     if 'file' not in request.files:
-        return jsonify({"error": "No file part in the request"}), 400
+        return jsonify({"error": "key name need to be 'file' "}), 400
     
     file = request.files['file']
     
@@ -126,7 +126,16 @@ def upload_file():
     # 保存文件到指定路徑，例如 "uploads" 資料夾中
     file.save(f"./pdf/{file.filename}")
     
-    return jsonify({"message": f"File '{file.filename}' uploaded successfully!"}), 200
+    ask = ["學歷","工作經歷","專業技能","技術領域","自傳"]
+    pdfloader = PyPDFLoader(f"./pdf/{file.filename}")
+    pages = pdfloader.load()
+    llmAnwser = []
+    for item in ask:
+        Question = f"{pages[0].page_content},你可以幫我找出此人的{item}嗎?"
+        # llmAnwser.append(item)
+        llmAnwser.append(resumeLLM(Question, g.chatmodel))
+    
+    return jsonify({"message": f"File '{file.filename}' uploaded successfully!", "llmAnwser": llmAnwser}), 200
 
 
 if __name__ == '__main__':
