@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, g
 from ctransformers import AutoModelForCausalLM
 from flask_cors import CORS
 import json
-from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM
+from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
 
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 # llm = AutoModelForCausalLM.from_pretrained(
@@ -87,14 +87,14 @@ def ask_resume():
     else:
         return jsonify({"message": "No data structure available to update"}), 404
 
-@app.route("/resume", methods=['POST'])
-def resume():
-    data = request.get_json()
-    profession = data.get("profession")
-    talent = data.get("talent")
-    category = data.get("category")
-    res = llm("用 [中文] 生成一段大約100字有關 [" + profession + talent + category + "] 的中文履歷自我介紹句子")
-    return jsonify({"message": res})
+# @app.route("/resume", methods=['POST'])
+# def resume():
+#     data = request.get_json()
+#     profession = data.get("profession")
+#     talent = data.get("talent")
+#     category = data.get("category")
+#     res = llm("用 [中文] 生成一段大約100字有關 [" + profession + talent + category + "] 的中文履歷自我介紹句子")
+#     return jsonify({"message": res})
 
     
 @app.route("/AIspeak/rateAnwser", methods=["POST"])
@@ -112,6 +112,21 @@ def rate_anwser():
         
     else:
         return jsonify({"message": "No data structure available to update"}), 404
+
+@app.route('/upload', methods=['POST'])
+def upload_file():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part in the request"}), 400
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        return jsonify({"error": "No file selected for uploading"}), 400
+    
+    # 保存文件到指定路徑，例如 "uploads" 資料夾中
+    file.save(f"./pdf/{file.filename}")
+    
+    return jsonify({"message": f"File '{file.filename}' uploaded successfully!"}), 200
 
 
 if __name__ == '__main__':

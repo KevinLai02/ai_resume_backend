@@ -1,10 +1,14 @@
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import TextLoader, PyPDFLoader
 
 # -------------載入文件----------------
 loader = TextLoader(file_path='./txt/crew.txt',encoding="UTF-8")
 docs = loader.load()
 # print(docs[0])
 
+pdfloader = PyPDFLoader("./pdf/White Professional Web Designer Resume.pdf")
+pages = pdfloader.load()
+
+# print(pages[0].page_content)
 
 from langchain.indexes import VectorstoreIndexCreator
 from langchain_ollama import OllamaEmbeddings
@@ -80,7 +84,7 @@ def chatLLM(UserQuestiion,chatmodel,retriever):
 
 def rateLLM(UserQuestiion,chatmodel):
     prompt = ChatPromptTemplate.from_messages([
-        ('system','你是一位善用工具的面試官, '
+        ('system','你是一位善用工具的語言模型, '
                 '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
         # MessagesPlaceholder(variable_name="chat_history"),
         ('human','{input}'),
@@ -103,6 +107,31 @@ def rateLLM(UserQuestiion,chatmodel):
     llmAnwser = chain.invoke(UserQuestiion)
     return llmAnwser
 
+def resumeLLM(UserQuestiion,chatmodel):
+    prompt = ChatPromptTemplate.from_messages([
+        ('system','你是一位善用工具的面試官, '
+                '請自己判斷上下文來回答問題, 不要盲目地使用工具'),
+        # MessagesPlaceholder(variable_name="chat_history"),
+        ('human','{input}'),
+    ])
+
+    str_parser = StrOutputParser()
+    template = (
+        "你會幫我找出此人的學歷,工作經歷,專業技能,技術領域,自傳, \n"
+        "你不會說多餘的話, 你的回答只會有 '學歷,工作經歷,專業技能,技術領域,自傳'其中一個我問的問題, 加上找到的資料 "
+        # "{context}\n"
+        "問題: {question}"
+        )
+    prompt = ChatPromptTemplate.from_template(template)
+    chain = (
+        {"question": RunnablePassthrough()}
+        | prompt
+        | chatmodel
+        | str_parser
+    )
+    llmAnwser = chain.invoke(UserQuestiion)
+    return llmAnwser
+
 
 # retrieved_docs = retriever.invoke("船員資格")
 # print(f'傳回 {len(retrieved_docs)} 筆資料')
@@ -110,3 +139,24 @@ def rateLLM(UserQuestiion,chatmodel):
 # UserQuestiion = "我是一名具有三年工作經歷的前端工程師，擅長使用 HTML、CSS 和 JavaScript 開發高效且美觀的網頁應用程式。我熟悉 React 和 Vue 框架，並且在跨瀏覽器相容性和響應式設計方面有豐富的經驗。我熱衷於學習新技術，並且樂於與團隊合作解決複雜的技術問題，致力於提供最佳的用戶體驗。請根據上文問一個問題"
 # print(chatLLM(UserQuestiion,chatmodel,retriever))
 
+LLM = Initialize_LLM()
+chatmodel = LLM[0]
+
+ask = ["學歷","工作經歷","專業技能","技術領域","自傳"]
+llmAnwser = []
+
+for item in ask:
+    Question = f"{pages[0].page_content},你可以幫我找出此人的{item}嗎?"
+    # llmAnwser.append(item)
+    llmAnwser.append(resumeLLM(Question, chatmodel))
+
+print(llmAnwser[0])
+
+print(llmAnwser[1])
+
+print(llmAnwser[2])
+
+print(llmAnwser[3])
+
+print(llmAnwser[4])
+# print()
