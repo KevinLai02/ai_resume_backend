@@ -129,11 +129,31 @@ def upload_file():
     ask = ["學歷","工作經歷","專業技能","技術領域","自傳"]
     pdfloader = PyPDFLoader(f"./pdf/{file.filename}")
     pages = pdfloader.load()
-    llmAnwser = []
+    col = []
+
     for item in ask:
         Question = f"{pages[0].page_content},你可以幫我找出此人的{item}嗎?"
         # llmAnwser.append(item)
         llmAnwser.append(resumeLLM(Question, g.chatmodel))
+
+    EducationalQualifications = col[0]
+    WorkExperience = col[1]
+    ProfessionalSkills = col[2]
+    TechnicalField = col[3]
+    resumeAutobiography = col[4]
+    Question = f"""
+    此人的學歷為:{EducationalQualifications},
+    工作經歷為:{WorkExperience},
+    專業技能為{ProfessionalSkills},
+    技術領域為:{TechnicalField},
+    自傳為:{resumeAutobiography}。
+    請根據上文提供的資料問1個問題
+    """
+    llmAnwser = []
+
+    for i in range(5):
+        llmAnwser.append(chatLLM(Question,g.chatmodel,g.retriever))
+    print(llmAnwser)
     
     return jsonify({"message": f"File '{file.filename}' uploaded successfully!", "llmAnwser": llmAnwser}), 200
 
