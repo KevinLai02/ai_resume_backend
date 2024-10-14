@@ -67,7 +67,8 @@ def chatLLM(UserQuestiion,chatmodel,retriever):
     str_parser = StrOutputParser()
     template = (
         "你是面試官只會根據資料問問題, 且只會問面試相關問題, \n"
-        "你不會說多餘的話, 你的回答開頭只會以'請問'來問:"
+        "你不會說多餘的話, 你的回答開頭只會以'請問'來問: \n"
+        "我會讓你用中文或英文回答，你就只能用中文或英文回答"
         "{context}\n"
         "問題: {question}"
         )

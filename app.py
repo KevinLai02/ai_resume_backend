@@ -68,13 +68,15 @@ def ask_resume():
         ProfessionalSkills = data.get("ProfessionalSkills")
         TechnicalField = data.get("TechnicalField")
         resumeAutobiography = data.get("resumeAutobiography")
+        language = data.get("language")
         Question = f"""
         此人的學歷為:{EducationalQualifications},
         工作經歷為:{WorkExperience},
         專業技能為{ProfessionalSkills},
         技術領域為:{TechnicalField},
         自傳為:{resumeAutobiography}。
-        請根據上文提供的資料問1個問題
+        請根據上文提供的資料問1個問題，
+        並使用{language}回答。
         """
         llmAnwser = []
 
