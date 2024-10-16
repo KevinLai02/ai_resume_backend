@@ -84,6 +84,19 @@ def resume():
     talentRes = llm("使用者本身會[" + talent + "]這些專業技能，用繁體中文將他的專業技能敘述補足400字，不要引入任何標題 ")
     return jsonify({"introduction": introductionRes, "workExperience": workExperienceRes, "talent": talentRes})
 
+@app.route("/resume/llama3.1", methods=['POST'])
+def resumeLlama():
+    data = request.get_json()
+    profession = data.get("profession")
+    talent = data.get("talent")
+    category = data.get("category")
+    workExperience = data.get("workExperience")
+
+    introductionRes = g.chatmodel.invoke("用 [繁體中文] 生成一段大約150字有關 ["+ profession + "," + talent + "," + category + "] 的中文履歷自我介紹句子")
+    workExperienceRes = g.chatmodel.invoke("用繁體中文將以下這段在其他" + category + "公司的工作經驗以條列式補足300字，不要加任何標題 [" + workExperience + "]")
+    talentRes = g.chatmodel.invoke("使用者本身會[" + talent + "]這些專業技能，用繁體中文將他的專業技能敘述補足400字，不要引入任何標題 ")
+    return jsonify({"introduction": introductionRes, "workExperience": workExperienceRes, "talent": talentRes})
+
     
 @app.route("/AIspeak/rateAnwser", methods=["POST"])
 def rate_anwser():
