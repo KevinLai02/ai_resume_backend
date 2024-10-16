@@ -119,7 +119,7 @@ def upload_file():
     for item in ask:
         Question = f"{pages[0].page_content},你可以幫我找出此人的{item}嗎?"
         # llmAnwser.append(item)
-        llmAnwser.append(resumeLLM(Question, g.chatmodel))
+        col.append(resumeLLM(Question, g.chatmodel))
 
     EducationalQualifications = col[0]
     WorkExperience = col[1]
