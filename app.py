@@ -5,11 +5,11 @@ import json
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
 from langchain_community.document_loaders import PyPDFLoader
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-# llm = AutoModelForCausalLM.from_pretrained(
-#     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-#       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-#       model_type="alpaca"
-#     )
+llm = AutoModelForCausalLM.from_pretrained(
+    "TheBloke/Chinese-Alpaca-2-13B-GGUF",
+      model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
+      model_type="alpaca"
+    )
 
 app = Flask(__name__)
 
@@ -35,24 +35,6 @@ def process_text():
         return jsonify({"status": "error", "message": "No text provided"}), 400
     
     return jsonify({"status": "success", "text": text})
-
-# # 生成履歷文本路由
-# @app.route("/resume", methods=['GET'])
-# def resume():
-#     res = llm("用 [中文] 生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子")
-#     return jsonify({"message": res})
-# Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-# llm = AutoModelForCausalLM.from_pretrained(
-#     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-#       model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-#       model_type="alpaca"
-#     )
-# @app.route("/resume", methods=['GET'])
-# def resume():
-#     res = llm("用 [中文] 生成一段大約100字有關 [前端工程師，工作經歷3年] 的中文履歷自我介紹句子")
-#     return jsonify({"message": res}) 
-#     你這裡的問題應該是要返回json檔res不是json所以不行
-#     # return jsonify({"message": 'hello world'}) 
 
 @app.route("/AIspeak/resumeData", methods=["POST"])
 def ask_resume():
@@ -89,14 +71,18 @@ def ask_resume():
     else:
         return jsonify({"message": "No data structure available to update"}), 404
 
-# @app.route("/resume", methods=['POST'])
-# def resume():
-#     data = request.get_json()
-#     profession = data.get("profession")
-#     talent = data.get("talent")
-#     category = data.get("category")
-#     res = llm("用 [中文] 生成一段大約100字有關 [" + profession + talent + category + "] 的中文履歷自我介紹句子")
-#     return jsonify({"message": res})
+@app.route("/resume", methods=['POST'])
+def resume():
+    data = request.get_json()
+    profession = data.get("profession")
+    talent = data.get("talent")
+    category = data.get("category")
+    workExperience = data.get("workExperience")
+
+    introductionRes = llm("用 [繁體中文] 生成一段大約150字有關 ["+ profession + "," + talent + "," + category + "] 的中文履歷自我介紹句子")
+    workExperienceRes = llm("用繁體中文將以下這段在其他" + category + "公司的工作經驗以條列式補足300字，不要加任何標題 [" + workExperience + "]")
+    talentRes = llm("使用者本身會[" + talent + "]這些專業技能，用繁體中文將他的專業技能敘述補足400字，不要引入任何標題 ")
+    return jsonify({"introduction": introductionRes, "workExperience": workExperienceRes, "talent": talentRes})
 
     
 @app.route("/AIspeak/rateAnwser", methods=["POST"])
@@ -104,10 +90,7 @@ def rate_anwser():
     if request.method == 'POST':
         data = request.get_json()
         print(data)
-        
         Question = f"{data},請根據資料評分"
-
-        
         RateAnwser = rateLLM(Question,g.chatmodel)
         
         return jsonify({"status": "success", "RateAnwser": RateAnwser}), 200
@@ -131,11 +114,31 @@ def upload_file():
     ask = ["學歷","工作經歷","專業技能","技術領域","自傳"]
     pdfloader = PyPDFLoader(f"./pdf/{file.filename}")
     pages = pdfloader.load()
-    llmAnwser = []
+    col = []
+
     for item in ask:
         Question = f"{pages[0].page_content},你可以幫我找出此人的{item}嗎?"
         # llmAnwser.append(item)
         llmAnwser.append(resumeLLM(Question, g.chatmodel))
+
+    EducationalQualifications = col[0]
+    WorkExperience = col[1]
+    ProfessionalSkills = col[2]
+    TechnicalField = col[3]
+    resumeAutobiography = col[4]
+    Question = f"""
+    此人的學歷為:{EducationalQualifications},
+    工作經歷為:{WorkExperience},
+    專業技能為{ProfessionalSkills},
+    技術領域為:{TechnicalField},
+    自傳為:{resumeAutobiography}。
+    請根據上文提供的資料問1個問題
+    """
+    llmAnwser = []
+
+    for i in range(5):
+        llmAnwser.append(chatLLM(Question,g.chatmodel,g.retriever))
+    print(llmAnwser)
     
     return jsonify({"message": f"File '{file.filename}' uploaded successfully!", "llmAnwser": llmAnwser}), 200
 
