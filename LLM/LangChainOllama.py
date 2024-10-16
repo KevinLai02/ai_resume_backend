@@ -137,9 +137,3 @@ def resumeLLM(UserQuestiion,chatmodel):
 
 # UserQuestiion = "我是一名具有三年工作經歷的前端工程師，擅長使用 HTML、CSS 和 JavaScript 開發高效且美觀的網頁應用程式。我熟悉 React 和 Vue 框架，並且在跨瀏覽器相容性和響應式設計方面有豐富的經驗。我熱衷於學習新技術，並且樂於與團隊合作解決複雜的技術問題，致力於提供最佳的用戶體驗。請根據上文問一個問題"
 # print(chatLLM(UserQuestiion,chatmodel,retriever))
-
-
-
-
-
-# print()
