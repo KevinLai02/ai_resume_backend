@@ -1,9 +1,15 @@
 from flask import Flask, request, jsonify, g
 from ctransformers import AutoModelForCausalLM
 from flask_cors import CORS
-import json
+import psycopg2
+import pandas as pd
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
 from langchain_community.document_loaders import PyPDFLoader
+from db.database import engine, Base, get_db
+from sqlalchemy.orm import Session
+from db.User.User_model import create_user, get_user_by_email
+from flask_bcrypt import Bcrypt
+from db.User.User_controller import signUp, login
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 llm = AutoModelForCausalLM.from_pretrained(
     "TheBloke/Chinese-Alpaca-2-13B-GGUF",
@@ -12,6 +18,12 @@ llm = AutoModelForCausalLM.from_pretrained(
     )
 
 app = Flask(__name__)
+
+def init_db():
+    Base.metadata.create_all(bind=engine)
+
+def main():
+    init_db()
 
 @app.before_request
 def before_request():
@@ -155,8 +167,16 @@ def upload_file():
     
     return jsonify({"message": f"File '{file.filename}' uploaded successfully!", "llmAnwser": llmAnwser}), 200
 
+@app.route('/signUp', methods=['POST'])
+def signUp_route():
+    return signUp()
+
+@app.route('/login', methods=['POST'])
+def login_route():
+    return login()
 
 if __name__ == '__main__':
+    main()
     app.run(host='0.0.0.0', port=8080, debug=True)
 
 
