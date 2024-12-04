@@ -5,17 +5,10 @@ import psycopg2
 import pandas as pd
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
 from langchain_community.document_loaders import PyPDFLoader
-from db.database import engine, Base, get_db
-from sqlalchemy.orm import Session
-from db.User.User_model import create_user, get_user_by_email
-from flask_bcrypt import Bcrypt
+from db.database import engine, Base
 from db.User.User_controller import signUp, login
+from db.Resume.Resume_controller import resume
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
-llm = AutoModelForCausalLM.from_pretrained(
-    "TheBloke/Chinese-Alpaca-2-13B-GGUF",
-      model_file="chinese-alpaca-2-13b.q5_K_M.gguf", 
-      model_type="alpaca"
-    )
 
 app = Flask(__name__)
 
@@ -84,17 +77,8 @@ def ask_resume():
         return jsonify({"message": "No data structure available to update"}), 404
 
 @app.route("/resume", methods=['POST'])
-def resume():
-    data = request.get_json()
-    profession = data.get("profession")
-    talent = data.get("talent")
-    category = data.get("category")
-    workExperience = data.get("workExperience")
-
-    introductionRes = llm("用 [繁體中文] 生成一段大約150字有關 ["+ profession + "," + talent + "," + category + "] 的中文履歷自我介紹句子")
-    workExperienceRes = llm("用繁體中文將以下這段在其他" + category + "公司的工作經驗以條列式補足300字，不要加任何標題 [" + workExperience + "]")
-    talentRes = llm("使用者本身會[" + talent + "]這些專業技能，用繁體中文將他的專業技能敘述補足400字，不要引入任何標題 ")
-    return jsonify({"introduction": introductionRes, "workExperience": workExperienceRes, "talent": talentRes})
+def resume_route():
+    return resume()
 
 @app.route("/resume/llama3.1", methods=['POST'])
 def resumeLlama():
