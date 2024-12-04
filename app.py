@@ -8,6 +8,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from db.database import engine, Base
 from db.User.User_controller import signUp, login
 from db.Resume.Resume_controller import resume
+from db.Analyst.Analyst_controller import analyze
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 
 app = Flask(__name__)
@@ -158,6 +159,10 @@ def signUp_route():
 @app.route('/login', methods=['POST'])
 def login_route():
     return login()
+
+@app.route('/analyze', methods=['POST'])
+def analyze_route():
+    return analyze()
 
 if __name__ == '__main__':
     main()
