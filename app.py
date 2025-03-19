@@ -5,19 +5,19 @@ import psycopg2
 import pandas as pd
 from LLM.LangChainOllama import Initialize_LLM, chatLLM, rateLLM, resumeLLM
 from langchain_community.document_loaders import PyPDFLoader
-from db.database import engine, Base
-from db.User.User_controller import signUp, login
+# from db.database import engine, Base
+# from db.User.User_controller import signUp, login
 from db.Resume.Resume_controller import resume
 from db.Analyst.Analyst_controller import analyze
 # Set gpu_layers to the number of layers to offload to GPU. Set to 0 if no GPU acceleration is available on your system.
 
 app = Flask(__name__)
 
-def init_db():
-    Base.metadata.create_all(bind=engine)
+# def init_db():
+#     Base.metadata.create_all(bind=engine)
 
-def main():
-    init_db()
+# def main():
+#     init_db()
 
 @app.before_request
 def before_request():
@@ -89,7 +89,7 @@ def resumeLlama():
     category = data.get("category")
     workExperience = data.get("workExperience")
 
-    introductionRes = g.chatmodel.invoke("用 [繁體中文] 生成一段大約150字有關 ["+ profession + "," + talent + "," + category + "] 的中文履歷自我介紹句子")
+    introductionRes = g.chatmodel.invoke("用 [繁體中文] 生成一段大約150字有關 ["+ profession + "," + talent + "," + category + "] 的中文履歷自我介紹句子，不要加任何標題，前方不要有句號")
     workExperienceRes = g.chatmodel.invoke("用繁體中文將以下這段在其他" + category + "公司的工作經驗以條列式補足300字，不要加任何標題 [" + workExperience + "]")
     talentRes = g.chatmodel.invoke("使用者本身會[" + talent + "]這些專業技能，用繁體中文將他的專業技能敘述補足400字，不要引入任何標題 ")
     return jsonify({"introduction": introductionRes.content, "workExperience": workExperienceRes.content, "talent": talentRes.content})
@@ -152,20 +152,20 @@ def upload_file():
     
     return jsonify({"message": f"File '{file.filename}' uploaded successfully!", "llmAnwser": llmAnwser}), 200
 
-@app.route('/signUp', methods=['POST'])
-def signUp_route():
-    return signUp()
+# @app.route('/signUp', methods=['POST'])
+# def signUp_route():
+#     return signUp()
 
-@app.route('/login', methods=['POST'])
-def login_route():
-    return login()
+# @app.route('/login', methods=['POST'])
+# def login_route():
+#     return login()
 
 @app.route('/analyze', methods=['POST'])
 def analyze_route():
     return analyze()
 
 if __name__ == '__main__':
-    main()
+    # main()
     app.run(host='0.0.0.0', port=8080, debug=True)
 
 
